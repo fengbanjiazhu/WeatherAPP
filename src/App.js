@@ -26,7 +26,7 @@ export default class App extends Component {
       }
     })
     .then((res) => {
-      // use a filter to keep city only
+      // use a filter to clear non-city data
       let newCityData = res.data.filter((item)=>{
         return item.Type === 'City'
       })
@@ -45,12 +45,13 @@ export default class App extends Component {
    
   }
 
-  // get weather of the city
+  // use the city code to check the weather
   checkWeather = (value) => {
     let key = encodeURI(this.state.apikey)
     axios.get(`/forecasts/v1/daily/1day/${value}?apikey=${key}`)
     .then((res) => {
       // console.log(res);
+      // whole day data
       let newWeaData = res.data.DailyForecasts[0]
       this.setState({
         weaDayData : newWeaData
@@ -59,6 +60,7 @@ export default class App extends Component {
     axios.get(`/forecasts/v1/hourly/1hour/${value}?apikey=${key}`)
     .then((res) =>{
       // console.log(res);
+      // 1 hour data & icon code
       this.setState({
         weaNowData : res.data[0],
         url : `https://developer.accuweather.com/sites/default/files/${res.data[0].WeatherIcon}-s.png`
@@ -72,6 +74,8 @@ export default class App extends Component {
       <div>
         <h1 className='title'>1 day weather Check</h1>
         <Search className='searchInput' enterButton="Search" onPressEnter={ this.searchCity }  placeholder="input city name"/>
+
+        {/* display the data we got in a select area */}
         <div className='choseCity'>
           please choose city:
           <div>
@@ -86,6 +90,8 @@ export default class App extends Component {
             </Select>
           </div>
         </div>
+
+        {/* check if we got the data, if not, display 'Checking...' */}
         { weaDayData.Date && weaNowData.DateTime ? 
         <Card title="the weather of your city is:">
           <div className='details'>
